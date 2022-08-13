@@ -1,0 +1,27 @@
+<!--
+ * @Author: error: git config user.name && git config user.email & please set dead value or install git
+ * @Date: 2021-01-09 18:14:32
+ * @LastEditors: error: git config user.name && git config user.email & please set dead value or install git
+ * @LastEditTime: 2022-08-11 22:36:20
+ * @FilePath: /alchemistyui.github.io-master/_includes/dropdown.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+<div class="navbar-item has-dropdown is-hoverable">
+    <a class="navbar-link">
+        MORE
+    </a>
+    <div class="navbar-dropdown has-background-black is-left">
+        {% for sitepage in site.html_pages %}
+        {% unless sitepage.url == '/' or sitepage.url == '/404'  or sitepage.url == '/blog' or sitepage.url == '/test-page' %}
+        <a href="{{sitepage.url | absolute_url}}"
+            class="navbar-item has-text-grey-light {% if page.url == sitepage.url | absolute_url  %}is-active{% endif %}">
+            {{sitepage.title}}
+        </a>
+        {% endunless %}
+        {% endfor %}
+        <!-- <hr class="navbar-divider">
+    <a class="navbar-item">
+      Report an issue
+    </a> -->
+    </div>
+</div>
