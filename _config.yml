@@ -11,13 +11,12 @@ baseurl:
 title: Ruoyue Shen
 # Description of the Site
 description: いつか待ってれば、いいことあるかもよ。
-# A portfolio of me
 # URL of Image of the Site
 # site-image: /WhatATheme/assets/images/meta.jpg
 # Keywords of the Site
 # site-keywords: Site, Template, Theme
 # URL for the Image of custom Favicon
-favicon-url: 
+# favicon-url: /assets/images/moon.png
 
 # URL of the Image of Custom Hero Image (i.e., the image in the background of the very first section of the Homepage)
 heroimage: /assets/images/sea3.jpg
@@ -39,6 +38,7 @@ github_username:  Alchemistyui
 # Google Analytics
 # google-analytics: UA-163806439-1
 
+
 # Disqus
 disqus-shortname: thedevslot
 
@@ -55,6 +55,7 @@ author-url: https://github.com/Alchemistyui
 # sass:
 #   sass_dir: _sass
 #   style: compressed
+
 
 # Build settings
 plugins:
