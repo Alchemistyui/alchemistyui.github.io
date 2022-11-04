@@ -40,6 +40,8 @@ Discriminative models directly solve the conditional probability $P(C_i\|x)$ by 
 
 # What are diffusion models?
 
+Diffusion models is one kind of Generative Models (others includes GAN, VAE).
+
 # Highlighted Works
 
 ## DDPM
