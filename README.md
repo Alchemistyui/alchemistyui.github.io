@@ -59,6 +59,8 @@ The contents of this repository are licensed under the [**GNU General Public Lic
 ruby -v
 chruby 3.1.2
 bundle install
+(rbenv exec bundle install)
 bundle exec jekyll s
+(rbenv exec bundle exec jekyll s)
 ```
 
