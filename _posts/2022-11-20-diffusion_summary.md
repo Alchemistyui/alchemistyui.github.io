@@ -43,7 +43,7 @@ Discriminative models directly solve the conditional probability $P(C_i\|x)$ by 
 
 (Most of the content in this part comes from [1], if you want to see more detailed reasoning, please check the original blog.)
 
-Diffusion models are one kind of Generative Model (others include GAN, VAE), and define a Markov chain that slowly adds Gaussian Noise into data (Forward Diffusion Process), and then learn to remove these noises and reconstruct the sample data (Reverse Denoising Process). The main difference between diffusion and other generative models is that its latent code is the same dimension as the original input.
+Diffusion models are one kind of Generative Model (others include GAN, VAE), and define a Markov chain that slowly adds Gaussian Noise into data (Forward Diffusion Process), and then learn to remove these noises and reconstruct the sample data (Reverse Denoising Process). The main difference between diffusion and other generative models is that its latent code is the same dimension as the original input. In the following parts, diffusion models will be explained based on DDPM [2].
 
 
 ## Forward Diffusion Process
@@ -156,7 +156,7 @@ $$
 
 Because of Gaussian distribution $\mathcal{N} \propto \exp \left(-\frac{(x-\mu)^{2}}{2 \sigma^{2}}\right)=\exp \left(-\frac{1}{2}\left({\color{RedOrange} \frac{1}{\sigma^{2}}} x^{2}-{\color{Cerulean} \frac{2 \mu}{\sigma^{2}}} x+\frac{\mu^{2}}{\sigma^{2}}\right)\right)$, the mean and variance can be parameterized as follows. $C$ is not related to $x_{t-1}$ and is omitted; 
 
-Note that $q$ is the real distribution that we'd like to model, and $p_\theta$ predicted distribution outputted by the neural network. Thus, replace the noise with the predicted one ${\epsilon}_{\theta} (x_t, t)$, we can get the predicted mean $\boldsymbol{\mu}_{\theta} (x_t, t)$. For the predicted variance, DDPM fixes $\beta_t$ as constants and set $\mathbf{\Sigma}_{\theta}\left(\mathbf{x}_{t}, t\right)=\sigma_{t}^{2} \mathbf{I}$ where $\sigma_{t}$ are set to $\beta_{t}$ or $\tilde{\beta}_{t}=\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_{t}} \cdot \beta_{t}$. Because they found that learning a diagonal variance $\mathbf{\Sigma}_{\theta}$ leads to unstable training and poorer sample quality.
+Note that $q$ is the real distribution that we'd like to model, and $p_\theta$ predicted distribution outputted by the neural network. Thus, replace the noise with the predicted one ${\\epsilon}\_{\\theta}(x\_t,t)$, we can get the predicted mean $\\boldsymbol{\\mu}\_{\\theta}(x\_t,t)$. For the predicted variance, DDPM fixes $\\beta\_t$ as constants and set $\\mathbf{\\Sigma}\_{\\theta}\\left(\\mathbf{x}\_{t},t\right)=\\sigma\_{t}^{2}\\mathbf{I}$ where $\\sigma\_{t}$ are set to $\\beta\_{t}$ or $\\tilde{\\beta}\_{t}=\\frac{1-\\bar{\\alpha}\_{t-1}}{1-\\bar{\\alpha}\_{t}} \\cdot \\beta\_{t}$. Because they found that learning a diagonal variance $\\mathbf{\\Sigma}\_{\\theta}$ leads to unstable training and poorer sample quality.
  
 
 <!-- ${\epsilon}_{t} (x_t, t)$ is the noise predicted by the model and is used to predict variance; $\tilde{\beta}_{t}$ trainable (GLIDE) or fixed (DDPM), to $\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_{t}} \cdot \beta_{t}$ -->
@@ -218,7 +218,7 @@ $$
 \mathcal{L}_{V L B}=\underbrace{\mathbb{E}_{q\left(x_{0}\right)}\left(\mathbb{E}_{q\left(x_{1: T} \mid x_{0}\right)}\left[\log \frac{q\left(x_{1: T} \mid x_{0}\right)}{p_{\theta}\left(x_{0: T}\right)}\right]\right)=\mathbb{E}_{q\left(x_{0: T}\right)}\left[\log \frac{q\left(x_{1: T} \mid x_{0}\right)}{p_{\theta}\left(x_{0: T}\right)}\right]}_{\text {Fubini's theorem }} \geq \mathbb{E}_{q\left(x_{0}\right)}\left[-\log p_{\theta}\left(x_{0}\right)\right]
 $$
 
-After complex derivation, we can rewrite $\mathcal{L}_{VLB}$ into accumulation of entropy and multiple KL divergences. (Check [8] for more details.)
+After complex derivation, we can rewrite $\mathcal{L}_{VLB}$ into accumulation of entropy and multiple KL divergences. (Check [6] for more details.)
 
 $$
 \begin{aligned}
@@ -248,7 +248,7 @@ L_{t} &=\mathbb{E}_{\mathbf{x}_{0,6} \in}\left[\frac{1}{2\left\|\boldsymbol{\Sig
 $$
 
 
-Therefore, the objective of training the Diffusion model is the MSE between the Gaussian noises $ \boldsymbol{\epsilon}_{t} $ and $ \boldsymbol{\epsilon}_{\theta}(x_t, t) $ to make them consistent. DDPM further ignores the weighting term and simplifies $L_t$ to $L_t^{simple}$, and finally uses it as an objective because of the better result.
+Therefore, the objective of training the Diffusion model is the MSE between the Gaussian noises $\\boldsymbol{\\epsilon}\_{t}$ and $\\boldsymbol{\\epsilon}\_{\\theta}(x\_t,t)$ to make them consistent. DDPM further ignores the weighting term and simplifies $L\_t$ to $L\_t^{simple}$, and finally uses it as an objective because of the better result.
 
 $$
 \begin{aligned}
@@ -258,10 +258,13 @@ L_{t}^{\text {simple }} &=\mathbb{E}_{t \sim[1, T], \mathbf{x} 0, \epsilon}\left
 $$
 
 
-<!-- start here -->
 
-<!-- TODO: 添加整体架构图：【怎么理解今年CV比较火的扩散模型（DDPM）？ - 刘伟杰的回答 - 知乎
-https://www.zhihu.com/question/545764550/answer/2683043107】 -->
+
+<!-- ## Training and Generation procedure -->
+
+
+
+
 
 
 
@@ -270,26 +273,84 @@ https://www.zhihu.com/question/545764550/answer/2683043107】 -->
 
 ## continuous model (SDE)
 
+<!-- start here -->
 
 
-## DDPM
+
+## DDPM [2]
+
+Although the diffusion model involves a lot of mathematics and derivation, its implementation is very concise. The figure below shows the training process of the diffusion model. 
+
+<div align=center>
+<img src="/assets/images/blogs/diffusion_summary/train_procedure.png" width="50%" />
+</div>
 
 
 <!-- 看youtube的教程 -->
-The training and sampling algorithms in DDPM 
+The training and sampling algorithms in DDPM can be represented as:
 
 <div align=center>
 <img src="/assets/images/blogs/diffusion_summary/ddpm_algo.png" width="70%" />
 </div>
 
-<!-- 由于噪音和原始数据是同维度的，所以我们可以选择采用AutoEncoder架构来作为噪音预测模型。DDPM所采用的模型是一个基于residual block和attention block的U-Net模型。U-Net属于encoder-decoder架构，其中encoder分成不同的stages，每个stage都包含下采样模块来降低特征的空间大小（H和W），然后decoder和encoder相反，是将encoder压缩的特征逐渐恢复。U-Net在decoder模块中还引入了skip connection，即concat了encoder中间得到的同维度特征，这有利于网络优化。DDPM所采用的U-Net每个stage包含2个residual block，而且部分stage还加入了self-attention模块增加网络的全局建模能力。 另外，扩散模型其实需要的是个噪音预测模型，实际处理时，我们可以增加一个time embedding（类似transformer中的position embedding）来将timestep编码到网络中，从而只需要训练一个共享的U-Net模型。具体地，DDPM在各个residual block都引入了time embedding，如上图所示。 -->
+DDPM uses U-Net with residual block and self-attention block as the noise prediction model. Its encoder first down-samples the input to reduce the size of the feature space, and then the decoder restores the feature to the same dimension as the input. The decoder also introduces skip connections to concatenate the features of the same dimension of the encoder. In order to reuse models with different time stamps, time embedding is used to encode timestamp information into the network as the input to each residual block, so that only one shared U-Net is trained.
 
 
-## Improved DDPM
+## Improved DDPM [3]
 
 <!-- DDPM中前向方差是linear的，从$\beta_1=10e-4$到$\beta_T=0.02$.他们实验中的扩散模型显示了高质量的样本，但仍然无法像其他生成模型那样达到有竞争力的模型对数似然。帮助扩散模型获得更低的 NLL。其中一项改进是使用基于余弦的方差表。调度函数的选择可以是任意的，只要它在训练过程中提供近乎线性的下降和周围的细微变化即可t=0和t=T. -->
 
-## DDIM
+
+Log-likelihood is important for generative models because it forces the models to capture all the modes of the data distribution. Recent work has shown that small improvements in log-likelihood can have a dramatic impact on sample quality and learned feature representations. However, DDPMs perform poorly on log-likelihood. So this work proposed mainly three improvements to help the diffusion models get lower NLL and higher log-likelihood. (Refer to the slides [4] for more details.)
+
+### 1. Use a better choice of $\Sigma_{\theta}\left(x_{t}, t\right)$
+
+Although fixing the variance can get good performance, it's a waste not to use it for training. However, it’s hard for a neural network to predict the variance value directly, because it is just a small point on the number line. So here, the model learns a interpolate vector $v$ to interpolate between the upper and lower bound of the variance.
+
+$$
+\Sigma_{\theta}\left(x_{t}, t\right)=\exp \left(v \log \beta_{t}+(1-v) \log \tilde{\beta}_{t}\right)
+$$
+
+The new hybrid objective $L_{\text{hybrid}}$ is constructed because $L_{\text{simple}}$ has no constraint on $\Sigma_{\theta}$. $\lambda=0.001$ is small and the gradient of $\mu_{\theta}$ in $L_{\mathrm{vlb}}$ is stopped so that $L_{\mathrm{vlb}}$ guides $\Sigma_{\theta}$, while $L_{\text{simple}}$ is still the main source of influence over $\mu_{\theta}$.
+
+$$
+L_{\text {hybrid }}=L_{\text {simple }}+\lambda L_{\mathrm{vlb}}
+$$
+
+### 2. Improve the noise schedule
+
+The previous linear noise schedule is sub-optimal for images of lower resolution. The end of the forward noising process is too noisy, and doesn’t contribute very much to sample quality. As shown in the figure, even skipping the 20% reverse process, there is no significant drop in performance. The linear schedule falls towards zero faster, destroying information more quickly than necessary. The authors suggest to use a schedule that has a near-linear drop in the middle, and changes very little near $t = 0$ and $t = T$ to prevent abrupt changes in noise level. The choice of the scheduling function can be arbitrary, and here the cosine schedule is used.
+
+$$
+\beta_{t}=\operatorname{clip}\left(1-\frac{\bar{\alpha}_{t}}{\bar{\alpha}_{t-1}}, 0.999\right) \quad \bar{\alpha}_{t}=\frac{f(t)}{f(0)}; \quad \text { where } f(t)=\cos \left(\frac{t / T+s}{1+s} \cdot \frac{\pi}{2}\right)
+$$
+
+
+<div align=center>
+<img src="/assets/images/blogs/diffusion_summary/iddpm_noise_schedule.png" width="65%" />
+<img src="/assets/images/blogs/diffusion_summary/iddpm_cos_schedule.png" width="26%" />
+</div>
+
+
+
+### 3. Reduce gradient noise of loss
+
+Empirically the authors observed that it is pretty challenging to optimize $L_{\mathrm{vlb}}$ due to noisy gradients. Specially, different terms of $L_{\mathrm{vlb}}$ have different magnitudes, and the majority of the loss comes from the first few steps. So they use an important sampling to build a time-averaging smoothed version of $L_{\mathrm{vlb}}$. The learning curves show the efficiency of the proposed method.
+
+
+$$
+L_{\mathrm{vlb}}=E_{t \sim p_{t}}\left[\frac{L_{t}}{p_{t}}\right]
+$$
+
+<div align=center>
+<img src="/assets/images/blogs/diffusion_summary/iddpm_grad_noise.png" width="65%" />
+</div>
+
+
+## DDIM [5]
+
+
+
 
 ## GLIDE
 
@@ -346,10 +407,17 @@ MAKE-A-VIDEO, IMAGEN VIDEO
 
 [2] [DDPM: Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)
 
-[3] [Explaination for Improved DDPM](https://www.youtube.com/watch?v=gwI6g1pBD84&list=PL1v8zpldgH3pXjOUhfPVH3EhW4WMHVYPh)
+[3] [Improved Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2102.09672)
+
+<!-- [4] [Explaination for Improved DDPM](https://www.youtube.com/watch?v=gwI6g1pBD84&list=PL1v8zpldgH3pXjOUhfPVH3EhW4WMHVYPh) -->
+
+[4] [Slides for Improved Denoising Diffusion Probabilistic Models](https://docs.google.com/presentation/d/1naH9U9cmvOgz3eb4HDevcEht5xQ0x11v4UBFFA12Y6Y/edit?usp=sharing)
+
+[5] [Denoising Diffusion Implicit Models](https://arxiv.org/abs/2010.02502)
 
 
-[4] [Diffusion Models: A Comprehensive Survey of Methods and Applications](https://arxiv.org/abs/2209.00796)
+
+<!-- [6] [Diffusion Models: A Comprehensive Survey of Methods and Applications](https://arxiv.org/abs/2209.00796)
 
 [5] [A Survey on Generative Diffusion Model](https://arxiv.org/abs/2209.02646)
 
@@ -358,6 +426,8 @@ MAKE-A-VIDEO, IMAGEN VIDEO
 
 [7] [Usage Guidance of Stable Diffusion from Hugging Face](https://huggingface.co/blog/stable_diffusion#:~:text=Values%20between%207%20and%208.5%20are%20usually%20good,might%20look%20good%2C%20but%20will%20be%20less%20diverse)
 
-[8] [Deep Unsupervised Learning using Nonequilibrium Thermodynamics](https://arxiv.org/abs/1503.03585)
+[6] [Deep Unsupervised Learning using Nonequilibrium Thermodynamics](https://arxiv.org/abs/1503.03585)
 
-[9] [hugging face diffusers](https://huggingface.co/docs/diffusers/index)
+[9] [hugging face diffusers](https://huggingface.co/docs/diffusers/index) -->
+
+[another blog should read](https://yang-song.net/blog/2021/score/)
